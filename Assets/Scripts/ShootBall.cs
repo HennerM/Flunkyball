@@ -33,7 +33,12 @@ public class ShootBall : MonoBehaviour {
         {
             var rb = ball.GetComponent<Rigidbody>();
             watch.Stop();
+<<<<<<< HEAD
+            float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 95);
+            thrust = 4000;
+=======
             float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 10);
+>>>>>>> 1f8e91500c5b3f9360e4a535d96e682da497e0a0
             shooted = true;
             rb.useGravity = true;
             var transformVector = m_Camera.transform.forward.normalized * thrust;
