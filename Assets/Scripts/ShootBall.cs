@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using diagnostics = System.Diagnostics;
 
 public class ShootBall : MonoBehaviour {
 
 
     public Rigidbody ball;
-    public float thrust;
+    public diagnostics.Stopwatch watch;
     private Camera m_Camera;
 
     bool shooted = false;
 
     // Use this for initialization
     void Start () {
-
+        watch = new System.Diagnostics.Stopwatch();
     }
 
     // Update is called once per frame
@@ -26,11 +27,19 @@ public class ShootBall : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0))
         {
+            watch.Start();
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+
+            watch.Stop();
+            float thrust = watch.Elapsed.Milliseconds / 75;
             shooted = true;
-            var transformVector = transform.forward * thrust;
-            transformVector.y += 5;
-            ball.AddForce(transformVector, ForceMode.Impulse);
             ball.useGravity = true;
+            Debug.Log("Stopwatch stopped: " + thrust);
+            var transformVector = transform.forward *thrust;
+            ball.AddForce(transformVector, ForceMode.Impulse);
         }
 
     }
