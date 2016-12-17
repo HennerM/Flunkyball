@@ -14,15 +14,14 @@ public class ShootBall : MonoBehaviour {
     // Use this for initialization
     void Start () {
         watch = new System.Diagnostics.Stopwatch();
+        m_Camera = Camera.main;
     }
 
     // Update is called once per frame
     void Update () {
 
         if (!shooted) {
-            var forward = transform.forward * 3;
-            var position = forward + transform.position;
-            ball.transform.position = position;
+            ball.transform.position = m_Camera.transform.forward * 2.0f + m_Camera.transform.position;
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -34,12 +33,13 @@ public class ShootBall : MonoBehaviour {
         {
 
             watch.Stop();
-            float thrust = watch.Elapsed.Milliseconds / 75;
+            float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 95);
             shooted = true;
             ball.useGravity = true;
-            Debug.Log("Stopwatch stopped: " + thrust);
-            var transformVector = transform.forward *thrust;
-            ball.AddForce(transformVector, ForceMode.Impulse);
+            Debug.Log("button up, millisceconds: " + thrust);
+            var transformVector = m_Camera.transform.forward.normalized * thrust;
+            //transformVector.y += 2f;
+            ball.AddForce(transformVector, ForceMode.Force);
         }
 
     }
