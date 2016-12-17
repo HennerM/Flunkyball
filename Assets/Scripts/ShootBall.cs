@@ -5,7 +5,7 @@ using diagnostics = System.Diagnostics;
 public class ShootBall : MonoBehaviour {
 
 
-    public Rigidbody ball;
+    public Assets.Scripts.Projectile ball;
     public diagnostics.Stopwatch watch;
     private Camera m_Camera;
 
@@ -30,15 +30,19 @@ public class ShootBall : MonoBehaviour {
         }
 
         if (Input.GetMouseButtonUp(0) && !shooted)
-        { 
+        {
+            var rb = ball.GetComponent<Rigidbody>();
             watch.Stop();
-            float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 95);
+            float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 10);
             shooted = true;
-            ball.useGravity = true;
-            Debug.Log("button up, millisceconds: " + thrust);
+            rb.useGravity = true;
             var transformVector = m_Camera.transform.forward.normalized * thrust;
-            ball.AddForce(transformVector, ForceMode.Force);
+            rb.AddForce(transformVector, ForceMode.Force);
+            ball.ShotFired();
+            
         }
+
+
 
     }
 

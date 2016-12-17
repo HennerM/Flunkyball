@@ -22,7 +22,6 @@ public class CloseUpObjectPreview : MonoBehaviour {
 	{
 		camera.enabled = false;
 		objectsToLookAt[visible].SetActive(false);
-		GameManager.instance.OnClosePreview();
 		visible = -1;
 	}
 
