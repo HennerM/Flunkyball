@@ -33,6 +33,7 @@ public class ShootBall : MonoBehaviour {
         { 
             watch.Stop();
             float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 95);
+            thrust = 4000;
             shooted = true;
             ball.useGravity = true;
             Debug.Log("button up, millisceconds: " + thrust);
