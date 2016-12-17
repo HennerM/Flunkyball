@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameManager : MonoBehaviour 
 {
@@ -21,6 +22,9 @@ public class GameManager : MonoBehaviour
 
     public State gameState;
 
+    public TextMesh textMeshPrefab;
+
+    private TextMesh shoutout;
 
     public Assets.Scripts.Target target;
     public Assets.Scripts.Projectile projectile;
@@ -44,15 +48,23 @@ public class GameManager : MonoBehaviour
             gameState = State.HIT; ;
             Vector3 spawnPosition = new Vector3(0.0f, 1.0f, 1.0f);
             Quaternion spawnRotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
-            var textMesh = new TextMesh();
-            textMesh.text = "DRINK";
-
-            GameObject text = (GameObject)Instantiate(textMesh, spawnPosition, spawnRotation);
+            TextMesh wallTxt= (TextMesh)Instantiate(textMeshPrefab, Vector3.up * 10, Quaternion.identity);
+            wallTxt.transform.position = Camera.main.transform.forward * 2.0f + Camera.main.transform.position;
+            wallTxt.transform.Rotate(new Vector3(0f, 90f, 0f));
+            wallTxt.text = "DRINK";
+            StartCoroutine(DoTheDance());
+            shoutout = wallTxt;
         }
        
     }
 
-	void Update () 
+    public IEnumerator DoTheDance()
+    {
+        yield return new WaitForSeconds(3f); // waits 3 seconds
+        shoutout.gameObject.SetActive(false);
+    }
+
+    void Update () 
 	{
 		if(Input.GetKeyDown(KeyCode.Escape))
 		{
