@@ -29,16 +29,14 @@ public class ShootBall : MonoBehaviour {
             watch.Start();
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-
+        if (Input.GetMouseButtonUp(0) && !shooted)
+        { 
             watch.Stop();
             float thrust = Mathf.Max(7,(watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 95);
             shooted = true;
             ball.useGravity = true;
             Debug.Log("button up, millisceconds: " + thrust);
             var transformVector = m_Camera.transform.forward.normalized * thrust;
-            //transformVector.y += 2f;
             ball.AddForce(transformVector, ForceMode.Force);
         }
 
