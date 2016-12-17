@@ -20,6 +20,13 @@ public class ShootBall : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
+
+        if (ball == null)
+        {
+            Debug.Log("no ballls fucktard");
+            return;
+        }
+
         if (!shooted) {
             ball.transform.position = m_Camera.transform.forward * 2.0f + m_Camera.transform.position;
         }
