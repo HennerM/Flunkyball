@@ -17,7 +17,7 @@ public class CollectableObject : MonoBehaviour, ILookAtHandler {
 
 	public void OnLookatInteraction()
 	{
-		GameManager.instance.CollectObject(objectID);
+		//GameManager.instance.CollectObject(objectID);
 		GetComponent<AudioSource>().Play();
 //		gameObject.SetActive(false);
 		GetComponent<Collider>().enabled = false;
