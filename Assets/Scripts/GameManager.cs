@@ -1,19 +1,70 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 using System.Collections;
 
 public class GameManager : MonoBehaviour 
 {
+
+    public enum State
+    {
+        INITIAL,
+        SHOT,
+        HIT,
+        MISSED,
+        FINISHED
+    }
+
+
+    public IDictionary<int, Beer> beerMap;
+
 	public CharacterController character;
-	public string gameScene;
-	public Animation introAnimation;
 
-	void Start ()
-	{
-		SetState(GameState.start);
-	}
+    public State gameState;
 
-	void Update () 
+    public TextMesh textMeshPrefab;
+
+    private TextMesh shoutout;
+
+    public Assets.Scripts.Target target;
+    public Assets.Scripts.Projectile projectile;
+
+    void Start()
+    {
+        gameState = State.INITIAL;
+        target.targetFellDown += OnTargetDown;
+        projectile.OnShotFired += () =>
+         {
+             this.gameState = State.SHOT;
+         };
+    }
+
+    void OnTargetDown()
+    {
+        Debug.Log("Game State:" + gameState);
+        if (gameState == State.SHOT)    
+        {
+            Debug.Log("bottle down");
+            gameState = State.HIT; ;
+            Vector3 spawnPosition = new Vector3(0.0f, 1.0f, 1.0f);
+            Quaternion spawnRotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+            TextMesh wallTxt= (TextMesh)Instantiate(textMeshPrefab, Vector3.up * 10, Quaternion.identity);
+            wallTxt.transform.position = Camera.main.transform.forward * 2.0f + Camera.main.transform.position;
+            wallTxt.transform.Rotate(new Vector3(0f, 90f, 0f));
+            wallTxt.text = "DRINK";
+            StartCoroutine(DoTheDance());
+            shoutout = wallTxt;
+        }
+       
+    }
+
+    public IEnumerator DoTheDance()
+    {
+        yield return new WaitForSeconds(3f); // waits 3 seconds
+        shoutout.gameObject.SetActive(false);
+    }
+
+    void Update () 
 	{
 		if(Input.GetKeyDown(KeyCode.Escape))
 		{
@@ -21,98 +72,18 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	void RestartGame ()
-	{
-		SceneManager.LoadScene(gameScene);
-	}
+    public
 
-	void EnableCharacter (bool enable)
-	{
-		character.enabled = enable;
-		character.GetComponent<UnityStandardAssets.Characters.FirstPerson.FirstPersonController>().enabled = enable; 
-		character.GetComponentInChildren<LookAtInteraction>().enabled = enable;
-		if(enable)
-			Cursor.lockState = CursorLockMode.Locked;
-		else
-			Cursor.lockState = CursorLockMode.None;
-	}
-
-	#region State Machine
-
-	public enum GameState { undefined, start, mainGameLoop, gameOver, gameWon, restart };
-
-	GameState gameState = GameState.undefined; 
-
-	void SetState (GameState theState)
-	{
-		switch(theState)
-		{
-			case GameState.start:
-				EnableCharacter(false);
-				introAnimation.Play();
-				StartCoroutine(SetStateDelayed(introAnimation.clip.length, GameState.mainGameLoop));
-				break;
-			case GameState.mainGameLoop:
-				EnableCharacter(true);
-				break;
-			case GameState.gameOver:
-				break;
-			case GameState.gameWon:
-				EnableCharacter(false);
-				GetComponent<AudioSource>().Play();
-				StartCoroutine(SetStateDelayed(GetComponent<AudioSource>().clip.length, GameState.restart));
-				break;
-			case GameState.restart:
-				RestartGame();
-				break;
-		}
-
-		gameState = theState;
-	}
-
-	// This is a "Coroutine". You can recognize it by the IEnumerator return value.
-	// It is used to execute code with a timing.
-	// In order to work, it has to be called with the command StartCoroutine(CoroutineName());
-	// Make yourself familiar with Coroutines - you'll need them!
-	// https://unity3d.com/de/learn/tutorials/topics/scripting/coroutines
-	IEnumerator SetStateDelayed (float delayTime, GameState state)
-	{
-		// the yield statement pauses the execution for a certain time. 
-		yield return new WaitForSeconds(delayTime);
-
-		SetState(state);
-	}
-
-	#endregion
 
 	#region Main Gameloop
 
-	int collectedObjects = 0;
-
-	public void CollectObject (int objectID)
-	{
-		collectedObjects++;
-
-		EnableCharacter(false);
-		CloseUpObjectPreview.instance.ShowPreview(objectID);
-	}
-
-	public void OnClosePreview ()
-	{
-		EnableCharacter(true);
-
-		if(collectedObjects == 3)
-		{
-			StartCoroutine(SetStateDelayed(1f, GameState.gameWon));
-		}
-	}
 
 	#endregion
 
 	#region Accessing the object
 
 	// Kind of like a Singleton. Easy way to access MonoBehaviors that only exist once in a game. 
-	public static GameManager instance;
+	static GameManager instance;
 
 	// Awake() is like Start() but will be called earlier. See https://docs.unity3d.com/Manual/ExecutionOrder.html
 	void Awake ()
@@ -121,4 +92,6 @@ public class GameManager : MonoBehaviour
 	}
 
 	#endregion
+
+    
 }
