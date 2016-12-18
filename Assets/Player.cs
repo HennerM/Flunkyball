@@ -54,7 +54,6 @@ public class Player : NetworkBehaviour
         camera = GetComponent<PlayerController>().cam;
         throwSpeedWatch = new System.Diagnostics.Stopwatch();
         playerSkill = new PlayerSkill();
-
 	}   
 
     // Update is called once per frame
@@ -220,6 +219,7 @@ public class Player : NetworkBehaviour
         force.y = 3f;
         rb.AddForce(force);
     }
+
 
 
 }
