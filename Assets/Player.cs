@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using diagnostics = System.Diagnostics;
 using Assets.Scripts;
-using System.Threading;
+using System.Timers;
 
 public enum PlayerMode
 {
@@ -106,7 +106,14 @@ public class Player : NetworkBehaviour
         if (beerInHand != null)
         {
             beerInHand.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
+            if (beerInHand.Empty)
+            {
+                FinishBeer();
+                beerInHand = null;
+            }
         }
+
+       
 
     }
 
@@ -115,7 +122,10 @@ public class Player : NetworkBehaviour
         drinking = true;
         if (drinkingTimer == null)
         {
-            drinkingTimer = new Timer(Copping, null, 0, 1000);
+            drinkingTimer = new Timer(1000);
+            drinkingTimer.Elapsed += Copping;
+            drinkingTimer.Enabled = false;
+            drinkingTimer.Start();
         }    
     }
 
@@ -158,9 +168,9 @@ public class Player : NetworkBehaviour
        
     }
 
-    private void Copping(Object o)
+    private void Copping(object source, System.Timers.ElapsedEventArgs e)
     {
-        if (isServer || playerSkill.Dead)
+        if (playerSkill.Dead)
             return;
 
         drunknessLevel++;
@@ -174,7 +184,15 @@ public class Player : NetworkBehaviour
             // Player Died, Hide
         }
 
-        ownBeer.Drink(this, playerSkill.DrinkingSpeed);
+        Debug.Log("Drinking Speed: " + playerSkill.DrinkingSpeed);
+        Debug.Log(beerInHand == null);
+        beerInHand.Drink(playerSkill.DrinkingSpeed);
+        if (beerInHand.Empty)
+        {
+            this.drinkingTimer.Enabled = false;
+            drinkingTimer.Stop();
+            // empty stuff
+        }
     }
 
     private void ThrowUp()
@@ -184,5 +202,12 @@ public class Player : NetworkBehaviour
         // animate dead
     }
 
+    private void FinishBeer()
+    {
+        var rb = beerInHand.GetComponent<Rigidbody>();
+        var force = camera.transform.forward.normalized * 3;
+        force.y = 3f;
+        rb.AddForce(force);
+    }
 
 }

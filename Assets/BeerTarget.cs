@@ -11,11 +11,13 @@ public class BeerTarget : NetworkBehaviour {
 
 
 
-    public float fill = 1f;
+    public float fill = 500;
 
     public bool opened = false;
 
     public int Id;
+
+    private bool destroyed = false;
 
 	// Use this for initialization
 	void Start () {
@@ -38,8 +40,29 @@ public class BeerTarget : NetworkBehaviour {
         }
     }
 
-    public bool Drink(float amount)
+    public void Drink(float amount)
     {
+        Debug.Log("fill state: " + fill);
+        this.fill -= amount;
+    }
 
+    public bool Empty
+    {
+        get
+        {
+            return this.fill < 0;
+        }
+    }
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (Empty && !destroyed)
+        {
+            var audio = GetComponent<AudioSource>();
+            var audioClip = (AudioClip)Resources.Load("Assets/Sound/beer_fall");
+            audio.clip = audioClip;
+            audio.Play();
+            destroyed = true;
+        }
     }
 }

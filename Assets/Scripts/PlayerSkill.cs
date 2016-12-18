@@ -9,7 +9,7 @@ namespace Assets.Scripts
     public class PlayerSkill : NetworkBehaviour
     {
         private int drinkingCapacity = 100;
-        private int drinkingSpeed = 100;
+        private int drinkingSpeed = 40;
         private int runningSpeed = 100;
         private int throwingStrength = 10;
         private bool dead = false;
