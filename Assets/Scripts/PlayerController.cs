@@ -8,6 +8,8 @@ public class PlayerController : NetworkBehaviour {
     float leftRightRot;
     float verticalRot;
 
+    public Behaviour[] componentsToDisable;
+
     void Start()
     {
         // IF I'M THE PLAYER, STOP HERE (DON'T TURN MY OWN CAMERA OFF)
@@ -15,7 +17,12 @@ public class PlayerController : NetworkBehaviour {
 
         // DISABLE CAMERA AND CONTROLS HERE (BECAUSE THEY ARE NOT ME)
         cam.enabled = false;
-    }
+
+            for (int i = 0; i < componentsToDisable.Length; i++)
+            {
+                componentsToDisable[i].enabled = false;
+            }
+        }
 
 
     void Update()
@@ -24,6 +31,9 @@ public class PlayerController : NetworkBehaviour {
         {
             return;
         }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
 
         //wasd moves
         float x = Input.GetAxis("Horizontal") * Time.deltaTime * 3.0f;

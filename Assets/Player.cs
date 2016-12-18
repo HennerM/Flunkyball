@@ -9,8 +9,11 @@ public enum PlayerMode
     PASSIVE
 }
 
-public class Player : NetworkBehaviour {
+public class Player : NetworkBehaviour
+{
 
+    public const float lookDistance = 1f;
+    public const KeyCode interactionKey = KeyCode.F;
     public diagnostics.Stopwatch watch;
 
     [SerializeField]
@@ -21,14 +24,25 @@ public class Player : NetworkBehaviour {
 
     private Camera camera;
 
-	// Use this for initialization
-	void Start () {
+    public BeerTarget ownBeer;
+
+    public BeerTarget beerInHand = null;
+
+    [HideInInspector]
+    public BeerTarget lastLookAtObject = null;
+
+    private bool drinking = false;
+
+    // Use this for initialization
+    void Start()
+    {
         camera = GetComponent<PlayerController>().cam;
         watch = new System.Diagnostics.Stopwatch();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (!isLocalPlayer)
         {
@@ -56,11 +70,69 @@ public class Player : NetworkBehaviour {
                 watch.Stop();
                 float thrust = Mathf.Max(7, (watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 10);
                 var transformVector = camera.transform.forward.normalized * thrust;
-                Debug.Log(transformVector);
                 projectile.FireShot(transformVector);
 
             }
         }
 
+        // TODO uncomment additional condition
+        if (mode == PlayerMode.ACTIVE 
+            // && GameManager.instance.gameState == GameManager.State.HIT
+            )
+        {
+            LookAt();
+        }
+
+        if (beerInHand != null)
+        {
+            beerInHand.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
+        }
+
+
     }
+
+    void LookAt()
+    {
+        // object that stores the results of a raycast
+        Vector3 rayOrigin = transform.position;
+        Vector3 rayDirection = transform.forward;
+        RaycastHit rayCastHit;
+
+        if (Physics.Raycast(rayOrigin, rayDirection, out rayCastHit, lookDistance))
+        {
+            // See if we have hit an object that carries a ILookAtHandler component
+            BeerTarget beerLookedAt = rayCastHit.collider.GetComponent<BeerTarget>();
+
+            // if we start looking at a valid object, call its "start" mehtod
+            // if we stop looking at a valid object, call its "end" method
+            if (beerLookedAt != null)
+            {
+                
+                if (lastLookAtObject == null)
+                {
+                    lastLookAtObject = beerLookedAt;
+                }
+                else if (beerLookedAt != lastLookAtObject)
+                {
+                    lastLookAtObject = beerLookedAt;
+                }
+            }
+            else if (lastLookAtObject != null)
+            {
+                lastLookAtObject = null;
+            }
+        }
+        else if (lastLookAtObject != null)
+        {
+            lastLookAtObject = null;
+        }
+        if (Input.GetKeyDown(interactionKey) )
+        {
+            Debug.Log(lastLookAtObject != null);
+            beerInHand = lastLookAtObject;
+            beerInHand.TakeBeer();
+        }
+    }
+
+
 }

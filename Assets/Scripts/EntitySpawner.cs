@@ -21,7 +21,7 @@ public class EntitySpawner : NetworkBehaviour {
 
         GameObject bottle = (GameObject)Instantiate(bottlePrefab, spawnPosition, spawnRotation);
         NetworkServer.Spawn(bottle);
-        GameManager.instance.bottle = bottle;
+        GameManager.instance.Target = bottle.GetComponent<Assets.Scripts.Target>();
     }
 
     private void spawnBall()
