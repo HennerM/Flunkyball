@@ -36,10 +36,11 @@ public class Player : NetworkBehaviour
 
     public BeerTarget ownBeer;
 
-    public BeerTarget beerInHand = null;
+    [HideInInspector]
+    public AbstractCollectable CollectedObject = null;
 
     [HideInInspector]
-    public BeerTarget lastLookAtObject = null;
+    public AbstractCollectable lastLookAtObject = null;
 
     private bool drinking = false;
     private diagnostics.Stopwatch drinkWatch;
@@ -96,20 +97,19 @@ public class Player : NetworkBehaviour
             LookAt();
         }
 
-        if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null)
+        if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null && lastLookAtObject.AllowedToCollect(this))
         {
-            beerInHand = lastLookAtObject;
-            beerInHand.TakeBeer();
-            startDrinkingTimer();
+            CollectedObject = lastLookAtObject;
+            CollectedObject.OnCollect(this);
         }
 
-        if (beerInHand != null)
+        if (CollectedObject != null)
         {
-            beerInHand.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
-            if (beerInHand.Empty)
+            CollectedObject.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
+            if (CollectedObject.CanDrop(this))
             {
-                FinishBeer();
-                beerInHand = null;
+                CollectedObject.OnDrop(this);
+                CollectedObject = null;
             }
         }
 
@@ -117,7 +117,7 @@ public class Player : NetworkBehaviour
 
     }
 
-    void startDrinkingTimer()
+    public void StartDrinkingTimer()
     {
         drinking = true;
         if (drinkingTimer == null)
@@ -139,20 +139,19 @@ public class Player : NetworkBehaviour
         if (Physics.Raycast(rayOrigin, rayDirection, out rayCastHit, lookDistance))
         {
             // See if we have hit an object that carries a ILookAtHandler component
-            BeerTarget beerLookedAt = rayCastHit.collider.GetComponent<BeerTarget>();
+            AbstractCollectable objectLookedAt = rayCastHit.collider.GetComponent<AbstractCollectable>();
 
             // if we start looking at a valid object, call its "start" mehtod
             // if we stop looking at a valid object, call its "end" method
-            if (beerLookedAt != null)
+            if (objectLookedAt != null)
             {
-                
                 if (lastLookAtObject == null)
                 {
-                    lastLookAtObject = beerLookedAt;
+                    lastLookAtObject = objectLookedAt;
                 }
-                else if (beerLookedAt != lastLookAtObject)
+                else if (objectLookedAt != lastLookAtObject)
                 {
-                    lastLookAtObject = beerLookedAt;
+                    lastLookAtObject = objectLookedAt;
                 }
             }
             else if (lastLookAtObject != null)
@@ -170,6 +169,14 @@ public class Player : NetworkBehaviour
 
     private void Copping(object source, System.Timers.ElapsedEventArgs e)
     {
+
+
+        if (!CollectedObject is BeerTarget)
+        {
+            return;
+        }
+        var beerTarget = (BeerTarget)CollectedObject;
+
         if (playerSkill.Dead)
             return;
 
@@ -184,10 +191,8 @@ public class Player : NetworkBehaviour
             // Player Died, Hide
         }
 
-        Debug.Log("Drinking Speed: " + playerSkill.DrinkingSpeed);
-        Debug.Log(beerInHand == null);
-        beerInHand.Drink(playerSkill.DrinkingSpeed);
-        if (beerInHand.Empty)
+        beerTarget.Drink(playerSkill.DrinkingSpeed);
+        if (beerTarget.CanDrop(this))
         {
             this.drinkingTimer.Enabled = false;
             drinkingTimer.Stop();
@@ -202,12 +207,14 @@ public class Player : NetworkBehaviour
         // animate dead
     }
 
-    private void FinishBeer()
+    public void FinishBeer()
     {
-        var rb = beerInHand.GetComponent<Rigidbody>();
+        var rb = CollectedObject.GetComponent<Rigidbody>();
         var force = camera.transform.forward.normalized * 3;
         force.y = 3f;
         rb.AddForce(force);
     }
+
+   
 
 }

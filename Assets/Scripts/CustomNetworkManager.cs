@@ -5,7 +5,9 @@ public class CustomNetworkManager : NetworkManager {
 
    
     private int nrOfPlayers = 0;
-   
+
+    public GameObject beerPrefab;
+
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
         //PlayerSpawnPoint spawnPoint = PlayerSpawnPoint.Next();
@@ -18,7 +20,7 @@ public class CustomNetworkManager : NetworkManager {
         //    Debug.Log(rotation);
         //}
         var position = new Vector3(10, 1, 0);
-        Quaternion spawnRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        Quaternion spawnRotation = Quaternion.Euler(0.0f, -90.0f, 0.0f);
         var tempPlayer = playerPrefab;
         var player = (GameObject)GameObject.Instantiate(tempPlayer, position, spawnRotation);
 
@@ -29,5 +31,15 @@ public class CustomNetworkManager : NetworkManager {
         }
         nrOfPlayers++;
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+        SpawnBeer(player);
+    }
+
+    void SpawnBeer(GameObject player)
+    {
+        var beerPosition = player.transform.position;
+        beerPosition.x -= 3f;
+        var beer = (GameObject)GameObject.Instantiate(beerPrefab, beerPosition, player.transform.rotation);
+        NetworkServer.Spawn(beer);
+        player.GetComponent<Player>().ownBeer = beer.GetComponent<BeerTarget>();
     }
 }

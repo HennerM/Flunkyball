@@ -6,6 +6,7 @@ public class EntitySpawner : NetworkBehaviour {
 
     public GameObject bottlePrefab;
     public GameObject ballPrefab;
+    
 
     public override void OnStartServer()
 
