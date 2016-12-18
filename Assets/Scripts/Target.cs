@@ -6,7 +6,6 @@ namespace Assets.Scripts
 
     public class Target : MonoBehaviour, ITarget
     {
-
         private Rigidbody rb;
 
         public event TargetFellDown targetFellDown;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RootMotionOff : StateMachineBehaviour 
+public class RootMotionOff : StateMachineBehaviour
 {
 	public float ColliderTestTime;
 
