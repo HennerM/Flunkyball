@@ -6,6 +6,9 @@ using System.Collections;
 public class GameManager : MonoBehaviour 
 {
 
+    public GameObject ball;
+    public GameObject bottle;
+
     public enum State
     {
         INITIAL,
