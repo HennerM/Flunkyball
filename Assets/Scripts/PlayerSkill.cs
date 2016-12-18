@@ -15,10 +15,10 @@ namespace Assets.Scripts
         private bool dead = false;
 
 
-        public int DrinkingCapacty { get; set; }
-        public int DrinkingSpeed { get; set; }
-        public int RunningSpeed { get; set; }
-        public int ThrowingStrength { get; set; }
-        public bool Dead { get; set; }
+        public int DrinkingCapacty { get { return drinkingCapacity; } }
+        public int DrinkingSpeed { get { return drinkingSpeed; } set { drinkingSpeed = value; } }
+        public int RunningSpeed { get { return runningSpeed; } set { runningSpeed = value; } }
+        public int ThrowingStrength { get { return throwingStrength; } set { throwingStrength = value; } }
+        public bool Dead { get { return dead; } set { dead = value; } }
     }
 }
