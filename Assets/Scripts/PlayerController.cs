@@ -13,8 +13,6 @@ public class PlayerController : NetworkBehaviour {
 
         // DISABLE CAMERA AND CONTROLS HERE (BECAUSE THEY ARE NOT ME)
         cam.enabled = false;
-        //GetComponent<PlayerControls>().enabled = false;
-        //GetComponent<PlayerMovement>().enabled = false;
     }
 
 
