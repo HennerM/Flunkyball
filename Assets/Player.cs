@@ -137,7 +137,7 @@ public class Player : NetworkBehaviour
             lastLookAtObject = null;
         }
 
-        if (Input.GetKeyDown(interactionKey) && beerInHand != null)
+        if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null)
         {
             beerInHand = lastLookAtObject;
             beerInHand.TakeBeer();
