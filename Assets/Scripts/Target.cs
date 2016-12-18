@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts;
+using UnityEngine.Networking;
 namespace Assets.Scripts
 {
 
-    public class Target : MonoBehaviour, ITarget
+    public class Target : NetworkBehaviour, ITarget
     {
 
         private Rigidbody rb;

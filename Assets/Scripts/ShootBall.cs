@@ -23,8 +23,11 @@ public class ShootBall : MonoBehaviour {
 
         if (ball == null)
         {
-            Debug.Log("no ballls fucktard");
+        //    Debug.Log("no ballls fucktard");
             return;
+        } else
+        {
+            //Debug.Log("such balls, much wow");
         }
 
         if (!shooted) {
