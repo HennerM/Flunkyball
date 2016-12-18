@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 using diagnostics = System.Diagnostics;
+using Assets.Scripts;
 
 public enum PlayerMode
 {
@@ -15,6 +16,14 @@ public class Player : NetworkBehaviour
     public const float lookDistance = 1f;
     public const KeyCode interactionKey = KeyCode.F;
     public diagnostics.Stopwatch watch;
+
+    private int drunknessLevel;
+
+    private PlayerSkill playerSkill;
+
+    public int ThrowingStrength { get { return playerSkill.ThrowingStrength; } }
+
+    public int RunningSpeed { get { return playerSkill.RunningSpeed; } }
 
     [SerializeField]
     public PlayerMode mode = PlayerMode.PASSIVE;
@@ -38,13 +47,14 @@ public class Player : NetworkBehaviour
     {
         camera = GetComponent<PlayerController>().cam;
         watch = new System.Diagnostics.Stopwatch();
-    }
+        playerSkill = new PlayerSkill();
+
+	}   
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update () {
 
-        if (!isLocalPlayer)
+        if (!isLocalPlayer || playerSkill.Dead)
         {
             return;
         }
@@ -68,7 +78,7 @@ public class Player : NetworkBehaviour
             {
                 var projectile = ball.GetComponent<Assets.Scripts.Projectile>();
                 watch.Stop();
-                float thrust = Mathf.Max(7, (watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / 10);
+                float thrust = Mathf.Max(7, (watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / ThrowingStrength);
                 var transformVector = camera.transform.forward.normalized * thrust;
                 projectile.FireShot(transformVector);
 
@@ -126,12 +136,37 @@ public class Player : NetworkBehaviour
         {
             lastLookAtObject = null;
         }
-        if (Input.GetKeyDown(interactionKey) )
+
+        if (Input.GetKeyDown(interactionKey) && beerInHand != null)
         {
-            Debug.Log(lastLookAtObject != null);
             beerInHand = lastLookAtObject;
             beerInHand.TakeBeer();
+            Copping();
         }
+    }
+
+    private void Copping()
+    {
+        if (isServer || playerSkill.Dead)
+            return;
+
+        drunknessLevel++;
+        
+        // Update Fill Level depending on Drining Speed
+
+        if (drunknessLevel == playerSkill.DrinkingCapacty)
+        {
+            ThrowUp();
+            // Throwing up
+            // Player Died, Hide
+        }     
+    }
+
+    private void ThrowUp()
+    {
+        playerSkill.Dead = true;
+        // Hide Player
+        // animate dead
     }
 
 
