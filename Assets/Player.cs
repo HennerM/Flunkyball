@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour {
     // Update is called once per frame
     void Update () {
 
-        if (!isLocalPlayer)
+        if (!isLocalPlayer || playerSkill.Dead)
         {
             return;
         }
@@ -73,9 +73,13 @@ public class Player : NetworkBehaviour {
             }
         }
 
+        if (this.mode == PlayerMode.PASSIVE && GameManager.instance.gameState == GameManager.State.HIT)
+        {
+            Copping();
+        } 
     }
 
-    public void Copping()
+    private void Copping()
     {
         if (isServer || playerSkill.Dead)
             return;
@@ -92,9 +96,10 @@ public class Player : NetworkBehaviour {
         }     
     }
 
-    public void ThrowUp()
+    private void ThrowUp()
     {
         playerSkill.Dead = true;
+        // Hide Player
         // animate dead
     }
 }

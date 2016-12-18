@@ -12,12 +12,13 @@ namespace Assets.Scripts
         private int drinkingSpeed = 100;
         private int runningSpeed = 100;
         private int throwingStrength = 10;
+        private bool dead = false;
 
 
         public int DrinkingCapacty { get; set; }
         public int DrinkingSpeed { get; set; }
         public int RunningSpeed { get; set; }
         public int ThrowingStrength { get; set; }
-
+        public bool Dead { get; set; }
     }
 }
