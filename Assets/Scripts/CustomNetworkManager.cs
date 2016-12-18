@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 public class CustomNetworkManager : NetworkManager {
 
@@ -7,6 +7,7 @@ public class CustomNetworkManager : NetworkManager {
     private int nrOfPlayers = 0;
 
     public GameObject beerPrefab;
+
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {

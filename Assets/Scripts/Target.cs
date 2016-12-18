@@ -18,13 +18,14 @@ namespace Assets.Scripts
 
         public override bool AllowedToCollect(Player player)
         {
-            return true;
-            //return this.onGround && GameManager.instance.gameState == GameManager.State.HIT && player.CollectedObject == null;
+            Debug.Log("allowed to collect?");
+            Debug.Log(GameManager.instance.GameState);
+            return GameManager.instance.GameState == GameManager.State.HIT && player.CollectedObject == null;
         }
 
         public override bool CanDrop(Player player)
         {
-            return true;
+            return Input.GetKeyUp("f");
         }
 
         public override void OnCollect(Player player)

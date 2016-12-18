@@ -16,18 +16,33 @@ public class GameManager : NetworkBehaviour
         FINISHED
     }
 
-
+    private NetworkIdentity objNetId;
     public IDictionary<int, Beer> beerMap;
 
-    public State gameState;
+    [SyncVar]
+    private State gameState;
 
+    [SerializeField]
+    public State GameState
+    {
+        get
+        {
+            return this.gameState;
+        }
+        set
+        {
+            this.CmdPushState(value);
+        }
+    }
+
+   
     public TextMesh textMeshPrefab;
 
     private TextMesh shoutout;
 
     void Start()
     {
-        gameState = State.INITIAL;
+        GameState = State.INITIAL;
     }
 
     private Assets.Scripts.Target target;
@@ -67,7 +82,8 @@ public class GameManager : NetworkBehaviour
             {
                 projectile.OnShotFired += () =>
                 {
-                    this.gameState = State.SHOT;
+
+                    this.GameState = State.SHOT;
                 };
             }
         }
@@ -77,9 +93,9 @@ public class GameManager : NetworkBehaviour
 
     void OnTargetDown()
     {
-        if (gameState == State.SHOT)    
+        if (GameState == State.SHOT)    
         {
-            gameState = State.HIT; ;
+            GameState = State.HIT; ;
             Vector3 spawnPosition = new Vector3(0.0f, 1.0f, 1.0f);
             Quaternion spawnRotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
             TextMesh wallTxt= (TextMesh)Instantiate(textMeshPrefab, Vector3.up * 10, spawnRotation);
@@ -125,7 +141,23 @@ public class GameManager : NetworkBehaviour
 		GameManager.instance = this;
 	}
 
-	#endregion
+    #endregion
 
-    
+
+
+    [Command]
+    void CmdPushState(State newState)
+    {
+        objNetId = GetComponent<NetworkIdentity>();        // get the object's network ID
+        objNetId.AssignClientAuthority(connectionToClient);    // assign authority to the player who is changing the color
+        RpcPushState(newState);                                    // usse a Client RPC function to "paint" the object on all clients
+        objNetId.RemoveClientAuthority(connectionToClient);    // remove the authority from the player who changed the color
+    }
+
+    [ClientRpc]
+    void RpcPushState(State newState)
+    {
+        this.gameState = newState;
+    }
+
 }

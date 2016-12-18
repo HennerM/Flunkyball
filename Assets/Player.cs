@@ -22,6 +22,8 @@ public class Player : NetworkBehaviour
 
     private PlayerSkill playerSkill;
 
+    private NetworkIdentity objNetId;
+
     public int ThrowingStrength { get { return playerSkill.ThrowingStrength; } }
 
     public int RunningSpeed { get { return playerSkill.RunningSpeed; } }
@@ -65,7 +67,7 @@ public class Player : NetworkBehaviour
 
         if (this.mode == PlayerMode.ACTIVE)
         {
-            if (GameManager.instance.gameState == GameManager.State.INITIAL)
+            if (GameManager.instance.GameState == GameManager.State.INITIAL)
             {
                 ball.transform.position = camera.transform.forward * 2.0f + camera.transform.position;
 
@@ -78,7 +80,7 @@ public class Player : NetworkBehaviour
             }
 
 
-            if (Input.GetMouseButtonUp(0) && GameManager.instance.gameState == GameManager.State.INITIAL)
+            if (Input.GetMouseButtonUp(0) && GameManager.instance.GameState == GameManager.State.INITIAL)
             {
                 var projectile = ball.GetComponent<Assets.Scripts.Projectile>();
                 throwSpeedWatch.Stop();
@@ -89,23 +91,23 @@ public class Player : NetworkBehaviour
             }
         }
 
-        // TODO uncomment additional condition
-        if (mode == PlayerMode.ACTIVE 
-            // && GameManager.instance.gameState == GameManager.State.HIT
-            )
-        {
-            LookAt();
-        }
+
+        LookAt();
+        
 
         if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null && lastLookAtObject.AllowedToCollect(this))
         {
-            CollectedObject = lastLookAtObject;
+            this.CollectedObject = lastLookAtObject;
             CollectedObject.OnCollect(this);
         }
 
         if (CollectedObject != null)
         {
-            CollectedObject.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
+            var position = camera.transform.forward;
+            position.x *= 2f;
+            position.z *= 2f;
+            CollectedObject.transform.position = position + camera.transform.position;
+            
             if (CollectedObject.CanDrop(this))
             {
                 CollectedObject.OnDrop(this);
@@ -113,7 +115,10 @@ public class Player : NetworkBehaviour
             }
         }
 
-       
+       if (drinking && GameManager.instance.GameState == GameManager.State.FINISHED)
+        {
+            CollectedObject.OnDrop(this);
+        }
 
     }
 
@@ -135,6 +140,7 @@ public class Player : NetworkBehaviour
         Vector3 rayOrigin = transform.position;
         Vector3 rayDirection = transform.forward;
         RaycastHit rayCastHit;
+
 
         if (Physics.Raycast(rayOrigin, rayDirection, out rayCastHit, lookDistance))
         {
@@ -215,6 +221,5 @@ public class Player : NetworkBehaviour
         rb.AddForce(force);
     }
 
-   
 
 }

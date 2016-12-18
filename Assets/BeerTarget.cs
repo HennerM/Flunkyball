@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 using System;
 
-public class BeerTarget : Assets.Scripts.AbstractCollectable {
+public class BeerTarget : Assets.Scripts.AbstractCollectable
+{
 
 
     const float BEER_DEFAULT_MASS = 1f;
@@ -21,16 +22,20 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable {
 
     private bool destroyed = false;
 
-	// Use this for initialization
-	void Start () {
+
+
+    // Use this for initialization
+    void Start()
+    {
         rb = this.GetComponent<Rigidbody>();
         rb.mass = BEER_DEFAULT_MASS;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public void TakeBeer()
     {
@@ -46,7 +51,7 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable {
     {
         Debug.Log("fill state: " + fill);
         this.fill -= amount;
-        rb.mass = BEER_DEFAULT_MASS * Mathf.Max(0,MAX_FILL - fill);
+        rb.mass = BEER_DEFAULT_MASS * Mathf.Max(0, MAX_FILL - fill);
     }
 
     public bool Empty
@@ -83,12 +88,16 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable {
 
     public override bool AllowedToCollect(Player player)
     {
-        return player.ownBeer == this && player.mode == PlayerMode.ACTIVE && GameManager.instance.gameState == GameManager.State.HIT;
+        return true;
+        return player.ownBeer == this && player.mode == PlayerMode.ACTIVE && GameManager.instance.GameState == GameManager.State.HIT;
     }
-    
+
 
     public override bool CanDrop(Player player)
     {
         return this.Empty;
     }
+
 }
+
+
