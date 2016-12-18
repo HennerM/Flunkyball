@@ -2,11 +2,11 @@
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class GameManager : MonoBehaviour 
+public class GameManager : NetworkBehaviour 
 {
 
-    public GameObject ball;
     public GameObject bottle;
 
     public enum State
@@ -21,34 +21,50 @@ public class GameManager : MonoBehaviour
 
     public IDictionary<int, Beer> beerMap;
 
-	public CharacterController character;
-
     public State gameState;
 
     public TextMesh textMeshPrefab;
 
     private TextMesh shoutout;
 
-    public Assets.Scripts.Target target;
-    public Assets.Scripts.Projectile projectile;
-
     void Start()
     {
         gameState = State.INITIAL;
-        if (target != null)
-        {
-            target.targetFellDown += OnTargetDown;
+        //if (target != null)
+        //{
+        //    target.targetFellDown += OnTargetDown;
 
-        }
-        if (this.projectile != null)
-        {
-            projectile.OnShotFired += () =>
-            {
-                this.gameState = State.SHOT;
-            };
-        }
-       
+        //}
+        
+      
     }
+
+    private GameObject ball;
+
+    public GameObject Ball
+    {
+        get
+        {
+            return this.ball;
+        }
+        set
+        {
+            if (this.ball == null)
+            {
+                this.ball = value;
+            }
+            var projectile = ball.GetComponent<Assets.Scripts.Projectile>();
+            if (projectile != null)
+            {
+                projectile.OnShotFired += () =>
+                {
+                    this.gameState = State.SHOT;
+                };
+            }
+        }
+    }
+
+
 
     void OnTargetDown()
     {

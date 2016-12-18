@@ -48,7 +48,7 @@ public class ShootBall : MonoBehaviour {
             rb.useGravity = true;
             var transformVector = m_Camera.transform.forward.normalized * thrust;
             rb.AddForce(transformVector, ForceMode.Force);
-            ball.ShotFired();
+            //ball.ShotFired();
             
         }
 

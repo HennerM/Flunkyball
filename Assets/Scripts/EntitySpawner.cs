@@ -31,6 +31,6 @@ public class EntitySpawner : NetworkBehaviour {
 
         GameObject ball = (GameObject)Instantiate(ballPrefab, spawnPosition, spawnRotation);
         NetworkServer.Spawn(ball);
-        GameManager.instance.ball = ball;
+        GameManager.instance.Ball = ball;
     }
 }
