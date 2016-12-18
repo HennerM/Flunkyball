@@ -32,11 +32,19 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gameState = State.INITIAL;
-        target.targetFellDown += OnTargetDown;
-        projectile.OnShotFired += () =>
-         {
-             this.gameState = State.SHOT;
-         };
+        if (target != null)
+        {
+            target.targetFellDown += OnTargetDown;
+
+        }
+        if (this.projectile != null)
+        {
+            projectile.OnShotFired += () =>
+            {
+                this.gameState = State.SHOT;
+            };
+        }
+       
     }
 
     void OnTargetDown()
@@ -48,7 +56,7 @@ public class GameManager : MonoBehaviour
             gameState = State.HIT; ;
             Vector3 spawnPosition = new Vector3(0.0f, 1.0f, 1.0f);
             Quaternion spawnRotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
-            TextMesh wallTxt= (TextMesh)Instantiate(textMeshPrefab, Vector3.up * 10, Quaternion.identity);
+            TextMesh wallTxt= (TextMesh)Instantiate(textMeshPrefab, Vector3.up * 10, spawnRotation);
             wallTxt.transform.position = Camera.main.transform.forward * 2.0f + Camera.main.transform.position;
             wallTxt.transform.Rotate(new Vector3(0f, 90f, 0f));
             wallTxt.text = "DRINK";

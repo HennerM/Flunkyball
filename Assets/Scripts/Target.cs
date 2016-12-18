@@ -1,21 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts;
+using UnityEngine.Networking;
 namespace Assets.Scripts
 {
 
-    public class Target : MonoBehaviour, ITarget
+    public class Target : NetworkBehaviour, ITarget
     {
         private Rigidbody rb;
 
         public event TargetFellDown targetFellDown;
 
         // Use this for initialization
-
-        void Start()
-        {
-            //        rb = GetComponent<Rigidbody>();
-        }
 
         // Update is called once per frame
         void Update()

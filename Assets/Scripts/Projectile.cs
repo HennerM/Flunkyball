@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Assets.Scripts
 {
-    public class Projectile : MonoBehaviour, IProjectile
+    public class Projectile : NetworkBehaviour, IProjectile
     {
         public event ShotsFired OnShotFired;
 

@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
-
+using UnityEngine.Networking;
 namespace UnityStandardAssets.Vehicles.Ball
 {
-    public class BallUserControl : MonoBehaviour
+    public class BallUserControl : NetworkBehaviour
     {
         private Ball ball; // Reference to the ball controller.
 
