@@ -37,4 +37,9 @@ public class BeerTarget : NetworkBehaviour {
             opened = true;
         }
     }
+
+    public bool Drink(float amount)
+    {
+
+    }
 }

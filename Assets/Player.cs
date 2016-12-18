@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using diagnostics = System.Diagnostics;
 using Assets.Scripts;
+using System.Threading;
 
 public enum PlayerMode
 {
@@ -15,7 +16,7 @@ public class Player : NetworkBehaviour
 
     public const float lookDistance = 1f;
     public const KeyCode interactionKey = KeyCode.F;
-    public diagnostics.Stopwatch watch;
+    public diagnostics.Stopwatch throwSpeedWatch;
 
     private int drunknessLevel;
 
@@ -41,12 +42,14 @@ public class Player : NetworkBehaviour
     public BeerTarget lastLookAtObject = null;
 
     private bool drinking = false;
+    private diagnostics.Stopwatch drinkWatch;
+    private Timer drinkingTimer = null;
 
     // Use this for initialization
     void Start()
     {
         camera = GetComponent<PlayerController>().cam;
-        watch = new System.Diagnostics.Stopwatch();
+        throwSpeedWatch = new System.Diagnostics.Stopwatch();
         playerSkill = new PlayerSkill();
 
 	}   
@@ -70,15 +73,15 @@ public class Player : NetworkBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                watch.Start();
+                throwSpeedWatch.Start();
             }
 
 
             if (Input.GetMouseButtonUp(0) && GameManager.instance.gameState == GameManager.State.INITIAL)
             {
                 var projectile = ball.GetComponent<Assets.Scripts.Projectile>();
-                watch.Stop();
-                float thrust = Mathf.Max(7, (watch.Elapsed.Milliseconds + watch.Elapsed.Seconds * 1000) / ThrowingStrength);
+                throwSpeedWatch.Stop();
+                float thrust = Mathf.Max(7, (throwSpeedWatch.Elapsed.Milliseconds + throwSpeedWatch.Elapsed.Seconds * 1000) / ThrowingStrength);
                 var transformVector = camera.transform.forward.normalized * thrust;
                 projectile.FireShot(transformVector);
 
@@ -93,12 +96,27 @@ public class Player : NetworkBehaviour
             LookAt();
         }
 
+        if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null)
+        {
+            beerInHand = lastLookAtObject;
+            beerInHand.TakeBeer();
+            startDrinkingTimer();
+        }
+
         if (beerInHand != null)
         {
             beerInHand.transform.position = camera.transform.forward * 1.2f + camera.transform.position;
         }
 
+    }
 
+    void startDrinkingTimer()
+    {
+        drinking = true;
+        if (drinkingTimer == null)
+        {
+            drinkingTimer = new Timer(Copping, null, 0, 1000);
+        }    
     }
 
     void LookAt()
@@ -137,15 +155,10 @@ public class Player : NetworkBehaviour
             lastLookAtObject = null;
         }
 
-        if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null)
-        {
-            beerInHand = lastLookAtObject;
-            beerInHand.TakeBeer();
-            Copping();
-        }
+       
     }
 
-    private void Copping()
+    private void Copping(Object o)
     {
         if (isServer || playerSkill.Dead)
             return;
@@ -154,12 +167,14 @@ public class Player : NetworkBehaviour
         
         // Update Fill Level depending on Drining Speed
 
-        if (drunknessLevel == playerSkill.DrinkingCapacty)
+        if (drunknessLevel >= playerSkill.DrinkingCapacty)
         {
             ThrowUp();
             // Throwing up
             // Player Died, Hide
-        }     
+        }
+
+        ownBeer.Drink(this, playerSkill.DrinkingSpeed);
     }
 
     private void ThrowUp()
