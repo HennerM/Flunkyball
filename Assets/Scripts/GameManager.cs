@@ -7,8 +7,6 @@ using UnityEngine.Networking;
 public class GameManager : NetworkBehaviour 
 {
 
-    public GameObject bottle;
-
     public enum State
     {
         INITIAL,
@@ -30,13 +28,24 @@ public class GameManager : NetworkBehaviour
     void Start()
     {
         gameState = State.INITIAL;
-        //if (target != null)
-        //{
-        //    target.targetFellDown += OnTargetDown;
+    }
 
-        //}
-        
-      
+    private Assets.Scripts.Target target;
+
+    public Assets.Scripts.Target Target
+    {
+        get
+        {
+            return target;
+        }
+        set
+        {
+            if (target == null)
+            {
+                target = value;
+                target.targetFellDown += OnTargetDown;
+            }
+        }
     }
 
     private GameObject ball;
@@ -68,10 +77,8 @@ public class GameManager : NetworkBehaviour
 
     void OnTargetDown()
     {
-        Debug.Log("Game State:" + gameState);
         if (gameState == State.SHOT)    
         {
-            Debug.Log("bottle down");
             gameState = State.HIT; ;
             Vector3 spawnPosition = new Vector3(0.0f, 1.0f, 1.0f);
             Quaternion spawnRotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
