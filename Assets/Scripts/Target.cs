@@ -18,7 +18,6 @@ namespace Assets.Scripts
 
         public override bool AllowedToCollect(Player player)
         {
-            Debug.Log("allowed to collect?");
             Debug.Log(GameManager.instance.GameState);
             return GameManager.instance.GameState == GameManager.State.HIT && player.CollectedObject == null;
         }
@@ -41,9 +40,9 @@ namespace Assets.Scripts
         // Use this for initialization
 
         // Update is called once per frame
-        void Update()
+        public override void Update()
         {
-
+            base.Update();
             if (Mathf.Abs(this.transform.rotation.z) > 0.5)
             {
                 if (targetFellDown != null)

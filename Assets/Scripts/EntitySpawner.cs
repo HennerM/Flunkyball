@@ -34,4 +34,6 @@ public class EntitySpawner : NetworkBehaviour {
         NetworkServer.Spawn(ball);
         GameManager.instance.Ball = ball;
     }
+
+
 }

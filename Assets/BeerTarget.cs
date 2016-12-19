@@ -13,7 +13,7 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable
     private Rigidbody rb;
 
 
-
+    [SyncVar(hook = "OnChangeFill")]
     public float fill = 500;
 
     public bool opened = false;
@@ -31,11 +31,6 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable
         rb.mass = BEER_DEFAULT_MASS;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void TakeBeer()
     {
@@ -51,6 +46,10 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable
     {
         Debug.Log("fill state: " + fill);
         this.fill -= amount;
+    }
+
+    void OnChangeFill(float newFilll)
+    {
         rb.mass = BEER_DEFAULT_MASS * Mathf.Max(0, MAX_FILL - fill);
     }
 
@@ -88,7 +87,6 @@ public class BeerTarget : Assets.Scripts.AbstractCollectable
 
     public override bool AllowedToCollect(Player player)
     {
-        return true;
         return player.ownBeer == this && player.mode == PlayerMode.ACTIVE && GameManager.instance.GameState == GameManager.State.HIT;
     }
 

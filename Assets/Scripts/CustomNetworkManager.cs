@@ -20,9 +20,11 @@ public class CustomNetworkManager : NetworkManager {
         //    rotation = spawnPoint.rotation;
         //    Debug.Log(rotation);
         //}
-        var position = new Vector3(10, 1, 0);
-        Quaternion spawnRotation = Quaternion.Euler(0.0f, -90.0f, 0.0f);
+        Vector3 position = nrOfPlayers == 0 ? new Vector3(10, 1, 0) : new Vector3(-10, 1, 0);
+        var rotationy =(nrOfPlayers == 0) ? -90 : 90; 
+        Quaternion spawnRotation = Quaternion.Euler(0.0f, rotationy, 0.0f);
         var tempPlayer = playerPrefab;
+        
         var player = (GameObject)GameObject.Instantiate(tempPlayer, position, spawnRotation);
 
         if (nrOfPlayers == 0)
@@ -40,7 +42,7 @@ public class CustomNetworkManager : NetworkManager {
         var beerPosition = player.transform.position;
         beerPosition.x -= 3f;
         var beer = (GameObject)GameObject.Instantiate(beerPrefab, beerPosition, player.transform.rotation);
-        NetworkServer.Spawn(beer);
+        NetworkServer.SpawnWithClientAuthority(beer, player);
         player.GetComponent<Player>().ownBeer = beer.GetComponent<BeerTarget>();
     }
 }

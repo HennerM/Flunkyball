@@ -53,8 +53,8 @@ public class Player : NetworkBehaviour
     {
         camera = GetComponent<PlayerController>().cam;
         throwSpeedWatch = new System.Diagnostics.Stopwatch();
-        playerSkill = new PlayerSkill();
-	}   
+        playerSkill = GetComponent<PlayerSkill>();
+    }   
 
     // Update is called once per frame
     void Update () {
@@ -97,26 +97,22 @@ public class Player : NetworkBehaviour
         if (Input.GetKeyDown(interactionKey) && lastLookAtObject != null && lastLookAtObject.AllowedToCollect(this))
         {
             this.CollectedObject = lastLookAtObject;
-            CollectedObject.OnCollect(this);
+            CollectedObject.Collect(this);
+
         }
 
         if (CollectedObject != null)
         {
-            var position = camera.transform.forward;
-            position.x *= 2f;
-            position.z *= 2f;
-            CollectedObject.transform.position = position + camera.transform.position;
-            
+
             if (CollectedObject.CanDrop(this))
             {
-                CollectedObject.OnDrop(this);
-                CollectedObject = null;
+                CollectedObject.Drop(this);
             }
         }
 
        if (drinking && GameManager.instance.GameState == GameManager.State.FINISHED)
         {
-            CollectedObject.OnDrop(this);
+            CollectedObject.Drop(this);
         }
 
     }

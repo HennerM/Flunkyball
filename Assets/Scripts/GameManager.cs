@@ -125,11 +125,6 @@ public class GameManager : NetworkBehaviour
     public
 
 
-	#region Main Gameloop
-
-
-	#endregion
-
 	#region Accessing the object
 
 	// Kind of like a Singleton. Easy way to access MonoBehaviors that only exist once in a game. 
